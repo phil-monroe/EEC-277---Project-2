@@ -374,58 +374,58 @@ buildAndDownloadTexture(int textureSize)
 	int i, j, indx;
 
 #if 0
-Color4DUbyte green={0x0, 0xFF, 0x0, 0xFF};
-Color4DUbyte red={0xFF, 0x00, 0x0, 0xFF};
+	Color4DUbyte green={0x0, 0xFF, 0x0, 0xFF};
+	Color4DUbyte red={0xFF, 0x00, 0x0, 0xFF};
 #endif
-Color4DUbyte green={0x0, 0xFF, 0x0, 0x3F};
-Color4DUbyte red={0xFF, 0x00, 0x0, 0x3F};
+	Color4DUbyte green={0x0, 0xFF, 0x0, 0x3F};
+	Color4DUbyte red={0xFF, 0x00, 0x0, 0x3F};
 
-glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-glGenTextures(1, &textureName);
-glBindTexture(GL_TEXTURE_2D, textureName);
+	glGenTextures(1, &textureName);
+	glBindTexture(GL_TEXTURE_2D, textureName);
 
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 
-texturePixels = (Color4DUbyte *)malloc(sizeof(Color4DUbyte)*textureSize*textureSize);
+	texturePixels = (Color4DUbyte *)malloc(sizeof(Color4DUbyte)*textureSize*textureSize);
 
-indx = 0;
-for (j=0;j<textureSize;j++)
-{
-	Color4DUbyte *even, *odd;
-	if ((j&1) == 0)                 /* odd */
+	indx = 0;
+	for (j=0;j<textureSize;j++)
 	{
-		even = &green;
-		odd = &red;
-	}
-	else
-	{
-		even = &red;
-		odd = &green;
-	}
-
-	for (i=0;i<textureSize;i++)
-	{
-		if ((i&1) == 0)
-			texturePixels[indx] = *even;
+		Color4DUbyte *even, *odd;
+		if ((j&1) == 0)                 /* odd */
+		{
+			even = &green;
+			odd = &red;
+		}
 		else
-			texturePixels[indx] = *odd;
-		indx++;
+		{
+			even = &red;
+			odd = &green;
+		}
+
+		for (i=0;i<textureSize;i++)
+		{
+			if ((i&1) == 0)
+				texturePixels[indx] = *even;
+			else
+				texturePixels[indx] = *odd;
+			indx++;
+		}
 	}
-}
 
-/* it would be nice to add another parameter to select the internal
+	/* it would be nice to add another parameter to select the internal
 texture format from the command line. */
-glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_STORAGE_MODE, textureSize, textureSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *)texturePixels);    
+	glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_STORAGE_MODE, textureSize, textureSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *)texturePixels);
 
-free((void *)texturePixels);
+	free((void *)texturePixels);
 
-glFinish();
-check_gl_errors ();
+	glFinish();
+	check_gl_errors ();
 
 }
 
@@ -1272,6 +1272,7 @@ void check_gl_errors (void) {
 			break;
 		default:
 			fprintf (stderr, "Unknown\n");
+			break;
 		}
 		exit(1);
 	}
@@ -1321,6 +1322,7 @@ main(int argc, char **argv)
 	parseArgs(argc, argv, &myAppState);
 
 	glutInitWindowSize(myAppState.imgWidth, myAppState.imgHeight);
+
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
 	{
