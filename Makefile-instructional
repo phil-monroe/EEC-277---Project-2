@@ -15,14 +15,25 @@ OPT = -O
 ARCH = -m64
 CFLAGS = $(OPT) $(ARCH)
 
+
 # you might have to change these on your system
-OPENGLLIBS = 
-GLUTLIBS =  -framework GLUT -framework OpenGL -framework Cocoa
+OPENGLLIBS = -L/usr/lib64 -lGL -lGLU
+GLUTLIBS = -L/usr/lib64 -lglut
+MACLIBS =  -framework GLUT -framework OpenGL -framework Cocoa
+
+UNAME = $(shell uname)
+
+ifeq ($(UNAME), Darwin)
+	INCLUDES = $(MACLIBS)
+else
+	INCLUDES = $(OPENGLLIBS) $(GLUTLIBS)
+endif
+
 
 all:	$(APPS)
 
 wesBench-instructional: wesBench-instructional.c 
-	$(CC) $(CFLAGS) -o wesBench-instructional $(OPENGLLIBS) $(GLUTLIBS) wesBench-instructional.c
+	$(CC) $(CFLAGS) -o wesBench-instructional $(INCLUDES) wesBench-instructional.c
 
 
 clean:

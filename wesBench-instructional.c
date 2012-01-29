@@ -100,9 +100,14 @@
 #define TEXTURE_STORAGE_MODE GL_RGBA8
 /*#define TEXTURE_STORAGE_MODE GL_R3_G3_B2 */
 
-
+#if defined(__APPLE__) || defined(MACOSX)
 #include <OpenGL/gl.h>
 #include <GLUT/glut.h>
+#else
+#include <GL/gl.h>
+#include <GL/glut.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -1172,9 +1177,6 @@ wesTriangleRateBenchmark(AppState *as)
       nFrames++;
       totalTris += dispatchTriangles;
       totalVerts += as->computedVertsPerArrayCall;
-			glFinish();
-			glFlush();
-			glutSwapBuffers();
     }
 
   glFinish();
