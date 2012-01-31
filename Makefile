@@ -12,13 +12,12 @@ APPS = wesBench-instructional
 
 #OPT = -g
 OPT = -O
-ARCH = -m64
-CFLAGS = $(OPT) $(ARCH)
+CFLAGS = $(OPT) $(ARCH) -I/usr/include
 
 
 # you might have to change these on your system
-OPENGLLIBS = -L/usr/lib64 -lGL -lGLU
-GLUTLIBS = -L/usr/lib64 -lglut
+OPENGLLIBS =  -lGL -lGLU
+GLUTLIBS =  -lglut -lm
 MACLIBS =  -framework GLUT -framework OpenGL -framework Cocoa
 
 UNAME = $(shell uname)

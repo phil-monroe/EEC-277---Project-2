@@ -10,10 +10,4 @@ Lighting is 	disabled
 ColorMaterial 	disabled
 Triangle type	0 
 Retained mode	disabled
-Area	Txsize	Mv/sec	MF/sec	MT/sec	Vs/buckt	Is/buckt
-128.0	8	50.38	2141.22	16.73	6144	0
-128.0	16	51.78	2192.72	17.13	6144	0
-128.0	32	51.97	2217.21	17.32	6144	0
-128.0	64	51.76	2191.87	17.12	6144	0
-128.0	128	51.96	2216.77	17.32	6144	0
-128.0	256	39.54	1679.01	13.12	6144	0
+Area	Mv/sec	MF/sec	MT/sec	Vs/buckt	Is/buckt

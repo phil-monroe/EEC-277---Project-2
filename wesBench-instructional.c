@@ -143,6 +143,7 @@ typedef enum
 #define DEFAULT_CLEAR_PER_FRAME 0
 #define DEFAULT_OUTLINE_MODE_BOOL 0 /* 0 means draw filled tri's, 1 means outline */
 
+
 typedef struct
 {
 	char  *appName;             /* obtained from argv[0] */
@@ -1100,7 +1101,6 @@ to GL using the specified primitive type */
 	}
 
 	glFinish();                 /* make sure all setup is finished */
-
 	startTime = endTime = glutGet(GLUT_ELAPSED_TIME);
 
 	while ((endTime - startTime) < testDurationMS)
@@ -1212,16 +1212,18 @@ to GL using the specified primitive type */
 	printf("Frames per Second (FPS): %f\n", nFrames / elapsedTimeS);
 
 
-	/* 	myAppState.appName, 
-myAppState.triangleAreaInPixels, 
-myAppState.computedMTrisPerSecond, 
-myAppState.computedMVertexOpsPerSecond, 
-myAppState.computedMFragsPerSecond, 
-myAppState.computedVertsPerArrayCall, 
-(int) myAppState.computedIndicesPerArrayCall); */
+	/*
+	 * myAppState.appName,
+	 * myAppState.triangleAreaInPixels,
+	 * myAppState.computedMTrisPerSecond,
+	 * myAppState.computedMVertexOpsPerSecond,
+	 * myAppState.computedVertsPerArrayCall,
+	 * myAppState.computedMFragsPerSecond,
+	 * (int) myAppState.computedIndicesPerArrayCall);
+	 */
 
-	myAppState.computedMTrisPerSecond = (totalTris / 1000000) / elapsedTimeS;
-	myAppState.computedMVertexOpsPerSecond = (totalVerts / 1000000) / elapsedTimeS;
+	myAppState.computedMTrisPerSecond = (totalTris / 1000000.0f) / elapsedTimeS;
+	myAppState.computedMVertexOpsPerSecond = (totalVerts / 1000000.0f) / elapsedTimeS;
 	myAppState.computedMFragsPerSecond = myAppState.computedMTrisPerSecond * myAppState.triangleAreaInPixels;
 
 
@@ -1387,7 +1389,7 @@ void Display (void) {
 
 		fprintf(stderr," %s: area=%2.1f px, tri rate = %3.2f Mtri/sec, vertex rate=%3.2f Mverts/sec, fill rate = %4.2f Mpix/sec, verts/bucket=%ld, indices/bucket=%d \n", myAppState.appName, myAppState.triangleAreaInPixels, myAppState.computedMTrisPerSecond, myAppState.computedMVertexOpsPerSecond, myAppState.computedMFragsPerSecond, myAppState.computedVertsPerArrayCall, (int) myAppState.computedIndicesPerArrayCall);
 	}
-	else   
+	else
 	{
 		int i;
 
@@ -1420,7 +1422,7 @@ void Display (void) {
 				fprintf(df,"%2.1f\t%3.2f\t%4.2f\t%4.2f\t%ld\t%ld\n", myAppState.triangleAreaInPixels, myAppState.computedMVertexOpsPerSecond, myAppState.computedMFragsPerSecond, myAppState.computedMTrisPerSecond, myAppState.computedVertsPerArrayCall, myAppState.computedIndicesPerArrayCall);
 
 			}
-		} 
+		}
 		else if (myAppState.doVBufSizeTest != 0) /* iterate over vbuf size */
 		{
 			fprintf(df,"Area\tMv/sec\tMF/sec\tMT/sec\tVs/buckt\tIs/buckt\n");
@@ -1438,7 +1440,7 @@ void Display (void) {
 			}
 
 		}
-		else if (myAppState.doTextureTest != 0) /* iterate over texture sizes */ 
+		else if (myAppState.doTextureTest != 0) /* iterate over texture sizes */
 		{
 			fprintf(df,"Area\tTxsize\tMv/sec\tMF/sec\tMT/sec\tVs/buckt\tIs/buckt\n");
 
