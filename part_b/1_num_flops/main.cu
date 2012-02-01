@@ -31,9 +31,8 @@ int main( int argc, char** argv) {
 void runTest( int argc, char** argv) {
 
 	// Hardware Dependent - NV GeForce 9500 GT
-	unsigned int dev, blocks, threads_per_block, threads;
-	dev = 0;
-	blocks = 512;
+	unsigned int blocks, threads_per_block, threads;
+	blocks = 1024;
 	threads_per_block = 512;
 	threads = blocks * threads_per_block;
 
@@ -49,13 +48,9 @@ void runTest( int argc, char** argv) {
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 	cudaEventRecord( start, 0 );
-	for(size_t i = 0; i < 10; ++i){
-		// Run FLOPS
-		max_flops_kernel<<< blocks, threads_per_block>>>(d_counters, threads_per_block);
-	}
-	
-	// max_flops_kernel<<< blocks, threads_per_block>>>(d_counters, threads_per_block);
 
+	max_flops_kernel<<< blocks, threads_per_block>>>(d_counters, (float) threads_per_block);
+	
 	cudaEventRecord( stop, 0 );
 	cudaEventSynchronize( stop );
 	cudaEventElapsedTime( &time, start, stop );
@@ -73,8 +68,8 @@ void runTest( int argc, char** argv) {
 	// Count up counters
 	float count = 0.0f;
 	for(int i = 0; i < threads; ++i){
-		printf("Thread %5d OPs: %f\n", i, h_counters[i]);
-		count = count + h_counters[i];
+		// printf("Thread %5d OPs: %f\n", i, h_counters[i]);
+		count = count + h_counters[i] + 2.0f;
 	}
 	printf("Total OPs: %d\n", (int) count);
 	float gflops = (int) count/(time/1000)/1000/1000/1000;
