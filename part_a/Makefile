@@ -8,7 +8,7 @@
 #
 #
 
-APPS = wesBench-instructional
+APPS = wesBench-instructional wesBench-visual
 
 #OPT = -g
 OPT = -O
@@ -33,6 +33,9 @@ all:	$(APPS)
 
 wesBench-instructional: wesBench-instructional.c 
 	$(CC) $(CFLAGS) -o wesBench-instructional $(INCLUDES) wesBench-instructional.c
+	
+wesBench-visual: wesBench-visual.c 
+	$(CC) $(CFLAGS) -o wesBench-visual $(INCLUDES) wesBench-visual.c
 
 
 clean:
