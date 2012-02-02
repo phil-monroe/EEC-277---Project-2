@@ -12,7 +12,9 @@
 
 #include "max_flops_kernel.cu"	// Kernel to Maximize FLOPS
 
-
+// Defines --------------------------------------------------------------------
+#define NUM_BLOCKS 2048
+#define NUM_THREADS_PER_BLOCK 384	//	Taken from CUDA Occupancy Calc to maximize occupancy
 
 // Forward Declarations --------------------------------------------------------
 void runTest( int argc, char** argv);
@@ -31,51 +33,61 @@ int main( int argc, char** argv) {
 void runTest( int argc, char** argv) {
 
 	// Hardware Dependent - NV GeForce 9500 GT
-	unsigned int blocks, threads_per_block, threads;
-	blocks = 1024;
-	threads_per_block = 512;
-	threads = blocks * threads_per_block;
+	unsigned int threads = NUM_BLOCKS * NUM_THREADS_PER_BLOCK;	
+	
+	printf("Number of Blocks:         %4d\n", NUM_BLOCKS);
+	printf("Number of Threads/Blocks: %4d\n", NUM_THREADS_PER_BLOCK);
+	printf("Number of Total Threads:  %4d\n", threads);
+	printf("\n");
+	
 
 	// Initialize counters on host and device to 0.0f
-	fprintf(stderr, "initializing counters\n");
+	printf("Init counters\n");
 	float *h_counters, *d_counters;
 	init_counters(&h_counters, &d_counters, threads);
 
+
 	// Create and Start Timer
-	fprintf(stderr, "Starting Test\n");
+	printf("Starting Test\n");
 	cudaEvent_t start, stop;
 	float time;
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 	cudaEventRecord( start, 0 );
 
-	max_flops_kernel<<< blocks, threads_per_block>>>(d_counters, (float) threads_per_block);
+	// Run the test
+	int it = 10;
+	for(int i = 0; i < it; i++)
+		max_flops_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters, NUM_THREADS_PER_BLOCK);
+	cudaThreadSynchronize(); // Make sure all GPU computations are done
 	
+	
+	// Record end time
 	cudaEventRecord( stop, 0 );
 	cudaEventSynchronize( stop );
 	cudaEventElapsedTime( &time, start, stop );
 	cudaEventDestroy( start );
 	cudaEventDestroy( stop );
-	fprintf(stderr, "Finished Test in %f s\n", time/1000.0f);
+	float time_s = time/1000.0f;
+	printf("Finished Test in %f s\n", time_s);
 
 	// Check for errors
-	printf("Error: %s\n", cudaGetErrorString( cudaGetLastError()));
-
-	// Copy Memory back
+	cudaError_t error = cudaGetLastError();
+	if(error != cudaSuccess)
+		printf("Error: %s\n", cudaGetErrorString( error ));
+		
+	// Check array
 	cudaMemcpy(h_counters, d_counters, threads * sizeof(float), cudaMemcpyDeviceToHost);
+	
+	// for(int i = 0; i < threads; ++i){
+	// 	printf("Thread %d: %f\n", i, h_counters[i]);
+	// }
 
-
-	// Count up counters
-	float count = 0.0f;
-	for(int i = 0; i < threads; ++i){
-		// printf("Thread %5d OPs: %f\n", i, h_counters[i]);
-		count = count + h_counters[i] + 2.0f;
-	}
-	printf("Total OPs: %d\n", (int) count);
-	float gflops = (int) count/(time/1000)/1000/1000/1000;
-
-
-	printf("GFLOPS: %.2f\n", gflops);
+	// Calculate GFLOPS
+	unsigned long long total_flops = NUM_FLOPS_PER_KERNEL * threads * it;
+	printf("Total FLOPs: %lld\n", total_flops);
+	float gflops = total_flops/(time_s*1000000000.0f);
+	printf("GFLOPS: %.3f\n", gflops);
 
 
 	// Cleanup
