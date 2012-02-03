@@ -1,2 +1,2 @@
 all:	main.cu kernel.cu
-	nvcc main.cu -o blocks_v_perf
+	nvcc main.cu -o branch_v_perf

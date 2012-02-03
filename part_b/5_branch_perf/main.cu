@@ -1,5 +1,5 @@
-def _BRANCHES_V_PERF_
-#define _BRANCHES_V_PERF_
+#ifndef _MAX_FLOPS_
+#define _MAX_FLOPS_
 
 // includes -------------------------------------------------------------------
 #include <stdlib.h>
@@ -13,53 +13,49 @@ def _BRANCHES_V_PERF_
 #include "kernel.cu"	// Kernel to Maximize FLOPS
 
 // Defines --------------------------------------------------------------------
-// Hardware Dependent - NV GeForce 9500 GT
-
-#define NUM_THREADS_PER_BLOCK 384	//	Taken from CUDA Occupancy Calc to maximize occupancy
-#define NUM_ITERATIONS			16
-#define NUM_BRANCHES_PER_THREAD 1
+#define NUM_BLOCKS 				128
+#define NUM_THREADS_PER_BLOCK 128	//	Taken from CUDA Occupancy Calc to maximize occupancy
+#define NUM_ITERATIONS 			32
 
 // Forward Declarations --------------------------------------------------------
+void runTest( int num_branches);
 void init_counters(float** h_counters, float** d_counters, unsigned int num_counters);
-float runTest(int num_blocks);
 
 // Main -----------------------------------------------------------------------
 int main( int argc, char** argv) {
-	printf("Testing Number of Branches vs. Performance");
+	printf("Testing Number of Branched vs. Performance");
 	printf("Number of Threads/Blocks: %4d\n", NUM_THREADS_PER_BLOCK);
 	printf("\n");
 	
-	FILE *file; 
-	file = fopen("out.csv","a+");
+	// FILE *file; 
+	// file = fopen("out.csv","a+");
 	
 	for(int iter = 0; iter < NUM_ITERATIONS; ++iter){
 		printf("Iteration %d\n", iter);
-		int num_branches = (int) pow(2.0f, (float) iter); 	// number of branches to run is 2^iter
-		float perf = runTest(num_branches); 
-		fprintf(file, "%d, %d, %f\n", iter, num_branches, perf);
+		runTest(iter+1); 
+		// fprintf(file, "%d, %d, %f\n", iter, iter+1, perf);
 	}
 	
-	fclose(file);
+	// fclose(file);
 	exit(0);
 }
 
 // runTest --------------------------------------------------------------------
-//		Runs a simple test to determine the FLOPS computed for a given
-//		number of blocks
+//		Runs a simple test to maximize the number of FLOPS computed on the GPU.
 //
-float runTest( int num_branches) {
-	
-	printf("Testing %4d Branches\n", num_branches);
-	int num_threads = NUM_BLOCKS * NUM_THREADS_PER_BLOCK;
-	int branch_gran = 32/num_branches;
-	
+void runTest( int num_branches) {
+	printf("Number of branches: %d \n", num_branches);
+	// Hardware Dependent - NV GeForce 9500 GT
+	unsigned int threads = NUM_BLOCKS * NUM_THREADS_PER_BLOCK;	
 
 	// Initialize counters on host and device to 0.0f
+	printf("Init counters\n");
 	float *h_counters, *d_counters;
-	init_counters(&h_counters, &d_counters, num_threads);
+	init_counters(&h_counters, &d_counters, threads);
 
 
 	// Create and Start Timer
+	printf("Starting Test\n");
 	cudaEvent_t start, stop;
 	float time;
 	cudaEventCreate(&start);
@@ -67,9 +63,7 @@ float runTest( int num_branches) {
 	cudaEventRecord( start, 0 );
 
 	// Run the test
-	branch_perf_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters, num_branches);
-	cudaThreadSynchronize(); // Make sure all GPU computations are done
-	
+	branch_perf_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters, num_branches);	
 	
 	// Record end time
 	cudaEventRecord( stop, 0 );
@@ -86,22 +80,25 @@ float runTest( int num_branches) {
 		printf("Error: %s\n", cudaGetErrorString( error ));
 		
 	// Check array
-	//cudaMemcpy(h_counters, d_counters, threads * sizeof(float), cudaMemcpyDeviceToHost);
-	
+	cudaMemcpy(h_counters, d_counters, threads * sizeof(float), cudaMemcpyDeviceToHost);
+	// 
 	// for(int i = 0; i < threads; ++i){
 	// 	printf("Thread %d: %f\n", i, h_counters[i]);
 	// }
 
-	// Calculate Performance
-	float perf = NUM_FLOPS_PER_BLOCK*NUM_BLOCKS/(time_s* 1000.0f);
-	printf("Total Perf: %.3f FLOPS\n", perf);
+	// Calculate GFLOPS
+	unsigned long long total_flops = N_FLOPS_PER_THREAD * NUM_BLOCKS * NUM_THREADS_PER_BLOCK;
+	printf("Total FLOPs: %lld\n", total_flops);
+	float gflops = total_flops/(time_s*1000000000.0f);
+	printf("GFLOPS: %.3f\n", gflops);
+	
 	printf("\n");
 	
+
+
 	// Cleanup
 	free(h_counters);
 	cudaFree(d_counters);
-	
-	return perf;
 }
 
 // init_counters --------------------------------------------------------------
@@ -119,4 +116,4 @@ void init_counters(float** h_counters, float** d_counters, unsigned int num_coun
 }
 
 
-#endif /* _BLOCKS_V_PERF_ */
+#endif /* MAX_FLOPS */

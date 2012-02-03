@@ -13,8 +13,8 @@
 #include "max_mem_kernel.cu"	// Kernel to Maximize FLOPS
 
 // Defines --------------------------------------------------------------------
-#define NUM_BLOCKS 2048
-#define NUM_THREADS_PER_BLOCK 384	//	Taken from CUDA Occupancy Calc to maximize occupancy
+#define NUM_BLOCKS 128
+#define NUM_THREADS_PER_BLOCK 128	//	Taken from CUDA Occupancy Calc to maximize occupancy
 #define BYTES_PER_INT 4
 
 // Forward Declarations --------------------------------------------------------
@@ -45,7 +45,7 @@ void runTest( int argc, char** argv) {
 	// Initialize counters on host and device to 0.0f
 	printf("Init counters\n");
 	float *h_counters, *d_counters;
-	init_counters(&h_counters, &d_counters, threads);
+	init_counters(&h_counters, &d_counters, threads*N_MEMSIZE);
 
 
 	// Create and Start Timer
@@ -59,8 +59,7 @@ void runTest( int argc, char** argv) {
 	// Run the test
 	int it = 10;
 	for(int i = 0; i < it; i++)
-		max_flops_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters, NUM_THREADS_PER_BLOCK);
-	cudaThreadSynchronize(); // Make sure all GPU computations are done
+		max_flops_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters);
 	
 	
 	// Record end time
@@ -85,12 +84,12 @@ void runTest( int argc, char** argv) {
 	// }
 
 	// Calculate GMEMOPS
-	unsigned long long total_mem_ops = NUM_MEM_OPS_PER_KERNEL * threads * it;
-	printf("Total FLOPs: %lld\n", total_mem_ops);
-	float gmemops = total_flops/(time_s*1000000000.0f);
+	unsigned long long total_mem_ops = (long long) NUM_MEM_OPS_PER_KERNEL * (long long) threads * it;
+	printf("Total MEMOPs: %lld\n", total_mem_ops);
+	float gmemops = total_mem_ops/(time_s * 10e9f);
 	printf("GMEMOPS(ints): %.3f\n", gmemops);
 	float gbps = gmemops * BYTES_PER_INT;
-	printf("GMEMOPS: %.3f\n", gbps);
+	printf("GBps: %.3f\n", gbps);
 
 
 	// Cleanup
