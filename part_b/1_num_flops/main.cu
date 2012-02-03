@@ -58,7 +58,7 @@ void runTest( int argc, char** argv) {
 	// Run the test
 	int it = 10;
 	for(int i = 0; i < it; i++)
-		max_flops_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters, NUM_THREADS_PER_BLOCK);
+		max_flops_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters);
 	cudaThreadSynchronize(); // Make sure all GPU computations are done
 	
 	
@@ -84,7 +84,7 @@ void runTest( int argc, char** argv) {
 	// }
 
 	// Calculate GFLOPS
-	unsigned long long total_flops = NUM_FLOPS_PER_KERNEL * threads * it;
+	unsigned long long total_flops = N_FLOPS_PER_KERNEL * threads * it;
 	printf("Total FLOPs: %lld\n", total_flops);
 	float gflops = total_flops/(time_s*1000000000.0f);
 	printf("GFLOPS: %.3f\n", gflops);
