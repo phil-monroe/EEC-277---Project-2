@@ -16,7 +16,7 @@
 // Hardware Dependent - NV GeForce 9500 GT
 
 #define NUM_THREADS_PER_BLOCK 384	//	Taken from CUDA Occupancy Calc to maximize occupancy
-#define NUM_ITERATIONS			16
+#define NUM_ITERATIONS			100
 
 // Forward Declarations --------------------------------------------------------
 void init_counters(float** h_counters, float** d_counters, unsigned int num_counters);
@@ -33,9 +33,9 @@ int main( int argc, char** argv) {
 	
 	for(int iter = 0; iter < NUM_ITERATIONS; ++iter){
 		printf("Iteration %d\n", iter);
-		int num_blocks = (int) pow(2.0f, (float) iter); 	// number of blocks to run is 2^iter
-		float perf = runTest(num_blocks); 
-		fprintf(file, "%d, %d, %f\n", iter, num_blocks, perf);
+		// int num_blocks = (int) pow(2.0f, (float) iter); 	// number of blocks to run is 2^iter
+		float perf = runTest(iter+1); 
+		fprintf(file, "%d, %d, %f\n", iter, iter+1, perf);
 	}
 	
 	fclose(file);
@@ -65,8 +65,7 @@ float runTest( int num_blocks) {
 	cudaEventRecord( start, 0 );
 
 	// Run the test
-	block_perf_kernel<<< num_blocks, NUM_THREADS_PER_BLOCK>>>(d_counters, NUM_THREADS_PER_BLOCK);
-	cudaThreadSynchronize(); // Make sure all GPU computations are done
+	max_flops_kernel<<< num_blocks, NUM_THREADS_PER_BLOCK>>>(d_counters);
 	
 	
 	// Record end time
@@ -91,8 +90,13 @@ float runTest( int num_blocks) {
 	// }
 
 	// Calculate Performance
+	unsigned long long total_flops = (long long)N_FLOPS_PER_KERNEL * (long long)num_blocks * (long long)NUM_THREADS_PER_BLOCK;
+	printf("Total FLOPs: %lld\n", total_flops);
+	float gflops = total_flops/(time_s*1000000000.0f);
+	printf("GFLOPS: %.3f\n", gflops);
+		
 	float perf = num_blocks/(time_s* 1000.0f);
-	printf("Total Perf: %.3f KBlocks/s\n", perf);
+	printf("Blocks per Sec.: %.3f KBlocks/s\n", perf);
 	printf("\n");
 	
 	// Cleanup

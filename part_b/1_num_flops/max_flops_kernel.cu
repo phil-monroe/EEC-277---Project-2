@@ -2,27 +2,27 @@
 #include <cuda_runtime_api.h>
 
 #define N_LOOPS				100
-#define N_FLOPS_PER_BLOCK	32
-#define N_FLOPS_PER_LOOP	N_FLOPS_PER_BLOCK * 32
-#define N_FLOPS_PER_KERNEL	N_FLOPS_PER_LOOP * N_LOOPS + 32
+#define N_FLOPS_PER_BLOCK	24
+#define N_FLOPS_PER_LOOP	76800
+#define N_FLOPS_PER_KERNEL	76816
 
 #define FLOPS_BLOCK \
-			reg0  = reg1  * reg2  + reg3;  \
-			reg1  = reg2  * reg3  + reg4;  \
-			reg2  = reg3  * reg4  + reg5;  \
-			reg3  = reg4  * reg5  + reg6;  \
-			reg4  = reg5  * reg6  + reg7;  \
-			reg5  = reg6  * reg7  + reg8;  \
-			reg6  = reg7  * reg8  + reg9;  \
-			reg7  = reg8  * reg9  + reg10; \
-			reg8  = reg9  * reg10 + reg11; \
-			reg9  = reg10 * reg11 + reg12; \
-			reg10 = reg11 * reg12 + reg13; \
-			reg11 = reg12 * reg13 + reg14; \
-			reg12 = reg13 * reg14 + reg15; \
-			reg13 = reg14 * reg15 + reg0;  \
-			reg14 = reg15 * reg0  + reg1;  \
-			reg15 = reg0  * reg1  + reg2;
+			reg0 = reg1  * reg2  + reg3;  \
+			reg5 = reg6 * reg6;				\
+			reg1 = reg2  * reg3  + reg4;  \
+			reg6 = reg7 * reg7;				\
+			reg2 = reg3  * reg4  + reg5;  \
+			reg7 = reg0 * reg0;				\
+			reg3 = reg4  * reg5  + reg6;  \
+			reg0 = reg1 * reg1;				\
+			reg4 = reg5  * reg6  + reg7;  \
+			reg1 = reg2 * reg2;				\
+			reg5 = reg6  * reg7  + reg0;  \
+			reg2 = reg3 * reg3;				\
+			reg6 = reg7  * reg0  + reg1;  \
+			reg3 = reg4 * reg4;				\
+			reg7 = reg0  * reg1  + reg2;  \
+			reg4 = reg5 * reg5;				\
 
 //-----------------------------------------------------------------------------
 // Simple test kernel template for flops test
@@ -35,14 +35,11 @@ void max_flops_kernel(float* d_counters) {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	
 	// Declare a bunch or registers and init to 0.0f
-	float reg0, reg1, reg2,  reg3,  reg4,  reg5,  reg6,  reg7, \
-			reg8, reg9, reg10, reg11, reg12, reg13, reg14, reg15;
+	float reg0, reg1, reg2,  reg3,  reg4,  reg5,  reg6,  reg7;
 	
-	// 1 FLOP per assignment = 16 FLOPs total
-	reg0  = reg1  = reg2  = reg3  = 0.125f * threadIdx.x;
-	reg4  = reg5  = reg6  = reg7  = 0.125f * threadIdx.y;
-	reg8  = reg9  = reg10 = reg11 = 0.5f 	* threadIdx.x;
-	reg12 = reg13 = reg14 = reg15 = 0.5f 	* threadIdx.y;
+	// 1 FLOP per assignment = 8 FLOPs total
+	reg0  = reg1  = reg2  = reg3  = 9.765625e-10f * threadIdx.x;
+	reg4  = reg5  = reg6  = reg7  = 9.765625e-10f * threadIdx.y;
 	
 	for(int i = 0; i < N_LOOPS; ++i){
 		FLOPS_BLOCK // 1
@@ -79,7 +76,6 @@ void max_flops_kernel(float* d_counters) {
 		FLOPS_BLOCK  // 32
 	}
 
-	// 16 More flops.
-	d_counters[i] = reg0 + reg1 + reg2  + reg3  + reg4  + reg5  + reg6  + reg7  + reg8 \
-								+ reg9 + reg10 + reg11 + reg12 + reg13 + reg14 + reg15 + 8.0f;
+	// 8 More flops.
+	d_counters[i] = reg0 + reg1 + reg2  + reg3  + reg4  + reg5  + reg6  + reg7  + 8.0f;
 }

@@ -13,8 +13,8 @@
 #include "max_flops_kernel.cu"	// Kernel to Maximize FLOPS
 
 // Defines --------------------------------------------------------------------
-#define NUM_BLOCKS 2048
-#define NUM_THREADS_PER_BLOCK 384	//	Taken from CUDA Occupancy Calc to maximize occupancy
+#define NUM_BLOCKS 128
+#define NUM_THREADS_PER_BLOCK 128	//	Taken from CUDA Occupancy Calc to maximize occupancy
 
 // Forward Declarations --------------------------------------------------------
 void runTest( int argc, char** argv);
@@ -56,11 +56,9 @@ void runTest( int argc, char** argv) {
 	cudaEventRecord( start, 0 );
 
 	// Run the test
-	int it = 10;
-	for(int i = 0; i < it; i++)
-		max_flops_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters);
-	cudaThreadSynchronize(); // Make sure all GPU computations are done
-	
+	int it = 1;
+	// for(int i = 0; i < it; i++)
+		max_flops_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters);	
 	
 	// Record end time
 	cudaEventRecord( stop, 0 );
@@ -84,10 +82,13 @@ void runTest( int argc, char** argv) {
 	// }
 
 	// Calculate GFLOPS
-	unsigned long long total_flops = N_FLOPS_PER_KERNEL * threads * it;
+	unsigned long long total_flops = N_FLOPS_PER_KERNEL * NUM_BLOCKS * NUM_THREADS_PER_BLOCK;
 	printf("Total FLOPs: %lld\n", total_flops);
 	float gflops = total_flops/(time_s*1000000000.0f);
 	printf("GFLOPS: %.3f\n", gflops);
+	
+	// printf("GFLOPS: %D\n", N_FLOPS_PER_KERNEL);
+	
 
 
 	// Cleanup
