@@ -5,7 +5,6 @@
 #define N_FLOPS_PER_BLOCK	24
 #define N_FLOPS_PER_LOOP	76800
 #define N_FLOPS_PER_KERNEL	76816
-#define SHARED_MEM_SIZE		12000
 
 #define FLOPS_BLOCK \
 			reg0 = reg1  * reg2  + reg3;  \
@@ -23,10 +22,7 @@
 			reg6 = reg7  * reg0  + reg1;  \
 			reg3 = reg4 * reg4;				\
 			reg7 = reg0  * reg1  + reg2;  \
-			reg4 = reg5 * reg5;
-
-
-extern __shared__ char array[];
+			reg4 = reg5 * reg5;				\
 
 //-----------------------------------------------------------------------------
 // Simple test kernel template for flops test
@@ -34,7 +30,7 @@ extern __shared__ char array[];
 // 	@param n_threads	- Total number of threads per block
 //-----------------------------------------------------------------------------
 __global__ 
-void max_flops_kernel(float* d_counters) {
+void warps_v_perf_kernel(float* d_counters) {
     // Increment the counter
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	
@@ -43,7 +39,7 @@ void max_flops_kernel(float* d_counters) {
 	
 	// 1 FLOP per assignment = 8 FLOPs total
 	reg0  = reg1  = reg2  = reg3  = 9.765625e-10f * threadIdx.x;
-	reg4  = reg5  = reg6  = reg7  = 9.765625e-10f * array[0];
+	reg4  = reg5  = reg6  = reg7  = 9.765625e-10f * threadIdx.y;
 	
 	for(int i = 0; i < N_LOOPS; ++i){
 		FLOPS_BLOCK // 1
@@ -81,7 +77,5 @@ void max_flops_kernel(float* d_counters) {
 	}
 
 	// 8 More flops.
-	reg0 = reg0 + reg1 + reg2  + reg3  + reg4  + reg5  + reg6  + reg7  + 8.0f;
-	d_counters[i] = reg0;
-	array[SHARED_MEM_SIZE] = (char) reg0;
+	d_counters[i] = reg0 + reg1 + reg2  + reg3  + reg4  + reg5  + reg6  + reg7  + 8.0f;
 }
