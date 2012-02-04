@@ -1,9 +1,10 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 
-#define NUM_MEM_OPS_PER_KERNEL 	1024
-#define N_MEMSIZE 					32
-#define N_LOOPS						512
+#define N_MEMSIZE_PER_THREAD		1024
+#define N_MEM_OPS_PER_LOOP			4
+#define N_LOOPS						(N_MEMSIZE_PER_THREAD / 2)
+#define NUM_MEM_OPS_PER_KERNEL 	(N_MEM_OPS_PER_LOOP * N_LOOPS)
 
 //-----------------------------------------------------------------------------
 // Simple test kernel template for memory ops test
@@ -13,15 +14,11 @@
 __global__ 
 void max_flops_kernel(float* d_counters) {
     // Increment the counter
-	int i = blockIdx.x * blockDim.x + threadIdx.x*N_MEMSIZE;
-	// int temp = 0;
-	// int temp2 = 0;
-	// temp = d_counters[i];
-	// d_counters[i] = d_counters[i+31];
-	// temp2 = d_counters[i+1];
-
-
-	for(int it = 0; it < N_LOOPS; ++it){
-		d_counters[i+it] = d_counters[i+(31-it)];
+	int i = blockIdx.x * blockDim.x + threadIdx.x*N_MEMSIZE_PER_THREAD;
+	float temp;
+	for(int it = 0; it < N_MEMSIZE_PER_THREAD; ++it){
+		temp = d_counters[i+it];
+		d_counters[i+it] = d_counters[i+(N_MEMSIZE_PER_THREAD-it)];
+		d_counters[i+(N_MEMSIZE_PER_THREAD-it)] = temp;
 	}
 }
