@@ -13,15 +13,17 @@
 #include "max_mem_kernel.cu"	// Kernel to Maximize FLOPS
 
 // Defines --------------------------------------------------------------------
-#define NUM_BLOCKS 				512
-#define NUM_THREADS_PER_BLOCK 512			//	Taken from CUDA Occupancy Calc to maximize occupancy
-#define BYTES_PER_INT 			4
-#define FLOAT_ARRAY_SIZE		268435456	// 1Gig of Floats
-														// Each kernel must swap 1024 elements
+#define NUM_BLOCKS 				32768		// Keep the MPs busy for a while
+#define NUM_THREADS_PER_BLOCK 384		//	Keep the cores occupied
+#define BYTES_PER_FLOAT			4			// Duh...
+#define OFFSET						0			// Test Coalescing
+#define ARRAY_SIZE				(NUM_BLOCKS*NUM_THREADS_PER_BLOCK+OFFSET) 	// Combine
+
 
 // Forward Declarations --------------------------------------------------------
 void runTest( int argc, char** argv);
-void init_counters(float** h_counters, float** d_counters, unsigned int num_counters);
+void init_arrays(float** h_in, float** h_out, float** d_in, float** d_out, size_t size);
+void checkCUDAError(const char *msg);
 
 // Main -----------------------------------------------------------------------
 int main( int argc, char** argv) {
@@ -44,11 +46,11 @@ void runTest( int argc, char** argv) {
 	printf("\n");
 	
 
-	// Initialize counters on host and device to 0.0f
+	// Initialize arrays on host and device
 	printf("Init counters\n");
-	float *h_counters, *d_counters;
-	init_counters(&h_counters, &d_counters, FLOAT_ARRAY_SIZE);
-
+	float *h_in, *h_out, *d_in, *d_out;
+	
+	init_arrays(&h_in, &h_out, &d_in, &d_out, ARRAY_SIZE);
 
 	// Create and Start Timer
 	printf("Starting Test\n");
@@ -59,9 +61,8 @@ void runTest( int argc, char** argv) {
 	cudaEventRecord( start, 0 );
 
 	// Run the test
-	max_flops_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_counters);
-	
-	
+	max_flops_kernel<<< NUM_BLOCKS, NUM_THREADS_PER_BLOCK>>>(d_in, d_out, OFFSET);
+
 	// Record end time
 	cudaEventRecord( stop, 0 );
 	cudaEventSynchronize( stop );
@@ -72,43 +73,67 @@ void runTest( int argc, char** argv) {
 	printf("Finished Test in %f s\n", time_s);
 
 	// Check for errors
-	cudaError_t error = cudaGetLastError();
-	if(error != cudaSuccess)
-		printf("Error: %s\n", cudaGetErrorString( error ));
+	checkCUDAError("test finished");
 		
 	// Check array
-	cudaMemcpy(h_counters, d_counters, threads * sizeof(float), cudaMemcpyDeviceToHost);
-	
-	// for(int i = 0; i < threads; ++i){
-	// 	printf("Thread %d: %f\n", i, h_counters[i]);
-	// }
+	// cudaMemcpy(h_out, d_out, threads * sizeof(float), cudaMemcpyDeviceToHost);
+	// for(int i = 0; i < ARRAY_SIZE; ++i)
+	// 	printf("A[%4d]: %.0f\n", i, h_out[i]);
 
 	// Calculate GMEMOPS
-	unsigned long long total_mem_ops = (long long) NUM_MEM_OPS_PER_KERNEL * (long long) threads;
-	printf("Total MEMOPs: %lld\n", total_mem_ops);
-	float gmemops = total_mem_ops/(time_s * 10e9f);
-	printf("GMEMOPS(ints): %.3f\n", gmemops);
-	float gbps = gmemops * BYTES_PER_INT;
+	//	
+	double total_bytes = ((double)threads * BYTES_PER_FLOAT * N_MEM_OPS_PER_KERNEL) / (1024.0*1024.0*1024.0) ;
+	printf("Total GBytes Transferred: %.3f\n", total_bytes);
+	double gbps = total_bytes / time_s;
 	printf("GBps: %.3f\n", gbps);
 
 
 	// Cleanup
-	free(h_counters);
-	cudaFree(d_counters);
+	free(h_in);
+	free(h_out);
+	cudaFree(d_in);
+	cudaFree(d_out);
+	
 }
 
 // init_counters --------------------------------------------------------------
 //		Initializes an array of floats that will be used to count FLOPS.
 //
-void init_counters(float** h_counters, float** d_counters, unsigned int num_counters){
-	*h_counters = (float*) malloc( num_counters * sizeof(float));   // Allocate counters on host
-	cudaMalloc((void **) d_counters, num_counters*sizeof(float));   // Allocate counters on device
-
-	// Initialize host counters to 0 ...
-	for( unsigned int i = 0; i < num_counters; ++i)
-		(*h_counters)[i] = 0;
+void init_arrays(float** h_in, float** h_out, float** d_in, float** d_out, size_t size){
+	// Allocate host memory
+	*h_in  = (float*) malloc( size * sizeof(float));
+	*h_out = (float*) malloc( size * sizeof(float));	
+	
+	// Allocate device memory
+	cudaMalloc((void **) d_in,  size * sizeof(float));
+	cudaMalloc((void **) d_out, size * sizeof(float));
+	checkCUDAError("malloc");	// Check for allocation errors
+	
+	// Initialize in arrays ...
+	for( unsigned int i = 0; i < size; ++i)
+		(*h_in)[i] = (float)i;
+		
 	// ... and copy to device
-	cudaMemcpy(*d_counters, *h_counters, num_counters * sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(*d_in, *h_in, size * sizeof(float), cudaMemcpyHostToDevice);
+	checkCUDAError("memcpy"); // Check for initialization errors
+	
+}
+
+//-----------------------------------------------------------
+
+//From Dr Dobbs "CUDA: Supercomputing for the masses, Part 3"
+//http://drdobbs.com/architecture-and-design/207200659      
+//-----------------------------------------------------------
+
+void checkCUDAError(const char *msg)
+{
+    cudaError_t err = cudaGetLastError();
+    if( cudaSuccess != err) 
+    {
+        fprintf(stderr, "Cuda error: %s: %s.\n", msg, 
+                             cudaGetErrorString( err) );
+        exit(EXIT_FAILURE);
+    }                         
 }
 
 
