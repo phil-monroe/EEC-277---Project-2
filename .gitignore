@@ -3,6 +3,6 @@ wesBench-visual
 wesBench-dump.txt
 max_flops
 blocks_v_perf
-max_mem
+bandwidthTest
 branch_v_perf
 out.csv

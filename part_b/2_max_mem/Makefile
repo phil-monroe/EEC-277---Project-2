@@ -1,2 +1,2 @@
-all:	main.cu max_mem_kernel.cu
-	nvcc main.cu -o max_mem
+all:	main.cu kernel.cu
+	nvcc main.cu -I../. -o bandwidthTest
