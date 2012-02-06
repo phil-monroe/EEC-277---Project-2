@@ -30,7 +30,7 @@
 // 	@param n_threads	- Total number of threads per block
 //-----------------------------------------------------------------------------
 __global__ 
-void max_flops_kernel(float* d_counters) {
+void kernel(float* d_counters) {
     // Increment the counter
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	

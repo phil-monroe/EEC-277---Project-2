@@ -1,2 +1,2 @@
-all:	main.cu max_flops_kernel.cu
-	nvcc main.cu -o max_flops
+all:	main.cu kernel.cu
+	nvcc main.cu -I../. -o maxFlopsTest
