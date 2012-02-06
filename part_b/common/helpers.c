@@ -1,8 +1,9 @@
 // Predeclarations ------------------------------------------------------------
-void initArray(float** host, float** device, size_t size, float initial_value=0.0f);
-void checkCUDAError(const char *msg);
-void startTest(cudaEvent_t &start, cudaEvent_t &stop);
+void 	initArray(float** host, float** device, size_t size, float initial_value=0.0f);
+void 	checkCUDAError(const char *msg);
+void 	startTest(cudaEvent_t &start, cudaEvent_t &stop);
 float finishTest(cudaEvent_t &start, cudaEvent_t &stop);
+void 	parseArgs(int argc, char** argv);
 
 
 // Struct to hold the app's state
@@ -12,24 +13,68 @@ struct appConfig{
 	unsigned int nThreads;
 	unsigned int nLoops;
 	unsigned int arraySize;
-} appConfig;
+};
 
 
 // displayHeader --------------------------------------------------------------
 //		Print header message and common config variable
 //    @param msg - Title for the test
 // ----------------------------------------------------------------------------
-void displayHeader(const char *msg){
+void displayHeader(const char *msg, appConfig ap){
 	printf("%s \n", msg);
 	printf("Written by Phil Monroe and Kramer Straube\n\n");
 	
-	printf("Number of Blocks       : %8d\n", appConfig.nBlocks);
-	printf("Number of Threads/Block: %8d\n", appConfig.nThreadsPerBlock);
-	printf("Number of Threads      : %8d\n", appConfig.nThreads);
+	printf("Number of Blocks       : %8d\n", ap.nBlocks);
+	printf("Number of Threads/Block: %8d\n", ap.nThreadsPerBlock);
+	printf("Number of Threads      : %8d\n", ap.nThreads);
 	
-	if(appConfig.nLoops)
-		printf("Number of Loops        : %8d\n", appConfig.nLoops);
+	if(ap.nLoops > 1)
+		printf("Number of Loops        : %8d\n", ap.nLoops);
 	printf("\n");
+}
+	
+	
+// parseArgs ------------------------------------------------------------------
+//		Parses the args and updates the app's state
+//    @param argc - Number of Args
+//		@param argv - Actual arguments
+//		@param ap   - The app's state to update
+// ----------------------------------------------------------------------------	
+void parseArgs(int argc, char** argv, appConfig &ap){
+	for(size_t i = 1; i < argc; i += 2){
+		if (i + 1 != argc){
+			if (strcmp(argv[i], "--blocks") == 0) {
+				ap.nBlocks = atoi(argv[i + 1]);
+			} else if (strcmp(argv[i], "--threads") == 0) {
+				ap.nThreadsPerBlock = atoi(argv[i + 1]);
+			} else if (strcmp(argv[i], "--loops") == 0) {
+				ap.nLoops = atoi(argv[i + 1]);
+			} else if (strcmp(argv[i], "--array-size") == 0) {
+				ap.arraySize = atoi(argv[i + 1]);
+			} else {
+				printf("Not enough or invalid arguments, please try again.\n");
+				exit(0);
+			}
+		}
+	}
+}
+
+
+// initialize -----------------------------------------------------------------
+//		Initializes the app's state
+//    @param argc - Number of Args
+//		@param argv - Actual arguments
+// ----------------------------------------------------------------------------
+appConfig initialize(int argc, char** argv){
+	appConfig ap;
+	ap.nBlocks 				= NUM_BLOCKS;
+	ap.nThreadsPerBlock 	= NUM_THREADS_PER_BLOCK;
+	ap.arraySize 			= ARRAY_SIZE;
+	ap.nThreads 			= ap.nBlocks * ap.nThreadsPerBlock;
+	ap.nLoops				= NUM_LOOPS;
+	
+	parseArgs(argc, argv, ap);
+	return ap;
 }
 	
 	
