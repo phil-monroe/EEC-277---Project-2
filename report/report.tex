@@ -84,7 +84,8 @@ In this test, the program varies the number of vertices per bucket and records t
 
 \newpage
 \subsection{Texture Size}
-This test sweeps the size of the texture used and shows how the fill rate changes, as seen in Figure 8. In particular, the fill rate suffers as the texture size increases. The tipping point is when the texture size reaches about 256 px. At that point, the fill rate begins to reduce more rapidly as the texture lookups hinder the rasterizer.
+This test sweeps the size of the texture used and shows how the fill rate changes, as seen in Figure 8. In particular, the fill rate suffers as the texture size increases. The tipping point is when the texture size reaches about 256 px. At that point, the fill rate begins to reduce more rapidly as the texture lookups hinder the rasterizer. At small texture sizes, the fill rate is the limiting factor because the texture bandwidth is not stressed due to texture caching. At large texture sizes, the texture bandwidth is the bottleneck because the large textures cannot be fully cached and the repeating lookups require more texture bandwidth than the card has.
+
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=5in]{figures/results4-fill-rate-vs-texture.png}
