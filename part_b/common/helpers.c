@@ -1,7 +1,7 @@
 // Predeclarations ------------------------------------------------------------
 void 	initArray(float** host, float** device, size_t size, float initial_value=0.0f);
 void 	checkCUDAError(const char *msg);
-void 	startTest(cudaEvent_t &start, cudaEvent_t &stop, char* msg);
+void 	startTest(cudaEvent_t &start, cudaEvent_t &stop, char* msg="Starting test.");
 float finishTest(cudaEvent_t &start, cudaEvent_t &stop);
 void 	parseArgs(int argc, char** argv);
 

@@ -33,7 +33,6 @@ int main( int argc, char** argv) {
 	
 	for(int iter = 0; iter < NUM_ITERATIONS; ++iter){
 		printf("Iteration %d\n", iter);
-		// int num_blocks = (int) pow(2.0f, (float) iter); 	// number of blocks to run is 2^iter
 		float perf = runTest(iter+1); 
 		fprintf(file, "%d, %d, %f\n", iter, iter+1, perf);
 	}
@@ -103,7 +102,7 @@ float runTest( int num_blocks) {
 	free(h_counters);
 	cudaFree(d_counters);
 	
-	return perf;
+	return gflops;
 }
 
 // init_counters --------------------------------------------------------------

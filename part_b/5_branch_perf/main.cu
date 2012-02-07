@@ -18,7 +18,7 @@
 #define NUM_ITERATIONS 			32
 
 // Forward Declarations --------------------------------------------------------
-void runTest( int num_branches);
+float runTest( int num_branches);
 void init_counters(float** h_counters, float** d_counters, unsigned int num_counters);
 
 // Main -----------------------------------------------------------------------
@@ -27,23 +27,23 @@ int main( int argc, char** argv) {
 	printf("Number of Threads/Blocks: %4d\n", NUM_THREADS_PER_BLOCK);
 	printf("\n");
 	
-	// FILE *file; 
-	// file = fopen("out.csv","a+");
+	FILE *file; 
+	file = fopen("out.csv","a+");
 	
 	for(int iter = 0; iter < NUM_ITERATIONS; ++iter){
 		printf("Iteration %d\n", iter);
-		runTest(iter+1); 
-		// fprintf(file, "%d, %d, %f\n", iter, iter+1, perf);
+		float perf = runTest(iter+1); 
+		fprintf(file, "%d, %d, %f\n", iter, iter+1, perf);
 	}
 	
-	// fclose(file);
+	fclose(file);
 	exit(0);
 }
 
 // runTest --------------------------------------------------------------------
 //		Runs a simple test to maximize the number of FLOPS computed on the GPU.
 //
-void runTest( int num_branches) {
+float runTest( int num_branches) {
 	printf("Number of branches: %d \n", num_branches);
 	// Hardware Dependent - NV GeForce 9500 GT
 	unsigned int threads = NUM_BLOCKS * NUM_THREADS_PER_BLOCK;	
@@ -99,6 +99,7 @@ void runTest( int num_branches) {
 	// Cleanup
 	free(h_counters);
 	cudaFree(d_counters);
+	return gflops;
 }
 
 // init_counters --------------------------------------------------------------

@@ -1,0 +1,150 @@
+--------------------------------------------------
+
+part_a% ./wesBench-instructional -tt 1 -doareatest                                                                                                                                                                                                                                                                [master]
+--------------------------------------------------
+Vendor:      NVIDIA Corporation
+Renderer:    NVIDIA GeForce 9500 GT OpenGL Engine
+Version:     2.1 NVIDIA-7.12.9
+Visual:      RGBA=<8,8,8,8>  Z=<24>  double=1
+Geometry:    1024x1024+50+44
+Screen:      1920x1080
+--------------------------------------------------
+
+wesBench Setup parameters
+Triangle area	128.000 (pixels^2)
+Test duration	5000(ms)
+Screen W/H	(1024,1024)
+Triangle limit	1073741824
+VertexBuf limit	1073741824
+Texture size	(0 x 0)
+Lighting is 	disabled
+ColorMaterial 	disabled
+Triangle type	1 
+Retained mode	disabled
+Elapsed Time: 5.018000 s
+Total Triangles: 512569740
+Total Verticies: 512573630
+Frames per Second (FPS): 387.604614
+verts/frame = 263534 
+nframes = 1945 
+ ./wesBench-instructional: area=1.0 px, tri rate = 102.15 Mtri/sec, vertex rate=102.15 Mverts/sec, fill rate = 102.15 Mpix/sec, verts/bucket=263534, indices/bucket=0
+Elapsed Time: 5.076000 s
+Total Triangles: 587413124
+Total Verticies: 587422018
+Frames per Second (FPS): 876.083496
+verts/frame = 132094 
+nframes = 4447 
+ ./wesBench-instructional: area=2.0 px, tri rate = 115.72 Mtri/sec, vertex rate=115.73 Mverts/sec, fill rate = 231.45 Mpix/sec, verts/bucket=132094, indices/bucket=0
+Elapsed Time: 5.075000 s
+Total Triangles: 595383096
+Total Verticies: 595401072
+Frames per Second (FPS): 1771.034546
+verts/frame = 66244 
+nframes = 8988 
+ ./wesBench-instructional: area=4.0 px, tri rate = 117.32 Mtri/sec, vertex rate=117.32 Mverts/sec, fill rate = 469.27 Mpix/sec, verts/bucket=66244, indices/bucket=0
+Elapsed Time: 5.087000 s
+Total Triangles: 594808500
+Total Verticies: 594844250
+Frames per Second (FPS): 3513.858887
+verts/frame = 33278 
+nframes = 17875 
+ ./wesBench-instructional: area=8.0 px, tri rate = 116.93 Mtri/sec, vertex rate=116.93 Mverts/sec, fill rate = 935.42 Mpix/sec, verts/bucket=33278, indices/bucket=0
+Elapsed Time: 5.101000 s
+Total Triangles: 533103200
+Total Verticies: 533167600
+Frames per Second (FPS): 6312.487793
+verts/frame = 16558 
+nframes = 32200 
+ ./wesBench-instructional: area=16.0 px, tri rate = 104.51 Mtri/sec, vertex rate=104.52 Mverts/sec, fill rate = 1672.15 Mpix/sec, verts/bucket=16558, indices/bucket=0
+Elapsed Time: 5.155000 s
+Total Triangles: 306213216
+Total Verticies: 306285744
+Frames per Second (FPS): 7034.723145
+verts/frame = 8446 
+nframes = 36264 
+ ./wesBench-instructional: area=32.0 px, tri rate = 59.40 Mtri/sec, vertex rate=59.42 Mverts/sec, fill rate = 1900.84 Mpix/sec, verts/bucket=8446, indices/bucket=0
+Elapsed Time: 5.300000 s
+Total Triangles: 172268664
+Total Verticies: 172350192
+Frames per Second (FPS): 7691.320312
+verts/frame = 4228 
+nframes = 40764 
+ ./wesBench-instructional: area=64.0 px, tri rate = 32.50 Mtri/sec, vertex rate=32.52 Mverts/sec, fill rate = 2080.23 Mpix/sec, verts/bucket=4228, indices/bucket=0
+Elapsed Time: 5.567000 s
+Total Triangles: 96436800
+Total Verticies: 96525600
+Frames per Second (FPS): 7975.570312
+verts/frame = 2174 
+nframes = 44400 
+ ./wesBench-instructional: area=128.0 px, tri rate = 17.32 Mtri/sec, vertex rate=17.34 Mverts/sec, fill rate = 2217.34 Mpix/sec, verts/bucket=2174, indices/bucket=0
+Elapsed Time: 6.046000 s
+Total Triangles: 55855940
+Total Verticies: 55962130
+Frames per Second (FPS): 8781.838867
+verts/frame = 1054 
+nframes = 53095 
+ ./wesBench-instructional: area=256.0 px, tri rate = 9.24 Mtri/sec, vertex rate=9.26 Mverts/sec, fill rate = 2365.05 Mpix/sec, verts/bucket=1054, indices/bucket=0
+Elapsed Time: 6.967000 s
+Total Triangles: 33822360
+Total Verticies: 33940620
+Frames per Second (FPS): 8487.153320
+verts/frame = 574 
+nframes = 59130 
+ ./wesBench-instructional: area=512.0 px, tri rate = 4.85 Mtri/sec, vertex rate=4.87 Mverts/sec, fill rate = 2485.58 Mpix/sec, verts/bucket=574, indices/bucket=0
+Elapsed Time: 8.851000 s
+Total Triangles: 21859230
+Total Verticies: 22014260
+Frames per Second (FPS): 8757.767578
+verts/frame = 284 
+nframes = 77515 
+ ./wesBench-instructional: area=1024.0 px, tri rate = 2.47 Mtri/sec, vertex rate=2.49 Mverts/sec, fill rate = 2528.96 Mpix/sec, verts/bucket=284, indices/bucket=0
+Elapsed Time: 12.562000 s
+Total Triangles: 16002792
+Total Verticies: 16207956
+Frames per Second (FPS): 8166.056152
+verts/frame = 158 
+nframes = 102582 
+ ./wesBench-instructional: area=2048.0 px, tri rate = 1.27 Mtri/sec, vertex rate=1.29 Mverts/sec, fill rate = 2608.96 Mpix/sec, verts/bucket=158, indices/bucket=0
+Elapsed Time: 18.171000 s
+Total Triangles: 13022526
+Total Verticies: 13417148
+Frames per Second (FPS): 10858.566406
+verts/frame = 68 
+nframes = 197311 
+ ./wesBench-instructional: area=4096.0 px, tri rate = 0.72 Mtri/sec, vertex rate=0.74 Mverts/sec, fill rate = 2935.46 Mpix/sec, verts/bucket=68, indices/bucket=0
+Elapsed Time: 26.002001 s
+Total Triangles: 10635372
+Total Verticies: 11118798
+Frames per Second (FPS): 9295.938477
+verts/frame = 46 
+nframes = 241713 
+ ./wesBench-instructional: area=8192.0 px, tri rate = 0.41 Mtri/sec, vertex rate=0.43 Mverts/sec, fill rate = 3350.70 Mpix/sec, verts/bucket=46, indices/bucket=0
+Elapsed Time: 17.673000 s
+Total Triangles: 3720468
+Total Verticies: 4340546
+Frames per Second (FPS): 17543.087891
+verts/frame = 14 
+nframes = 310039 
+ ./wesBench-instructional: area=16384.0 px, tri rate = 0.21 Mtri/sec, vertex rate=0.25 Mverts/sec, fill rate = 3449.11 Mpix/sec, verts/bucket=14, indices/bucket=0
+Elapsed Time: 26.497999 s
+Total Triangles: 3201348
+Total Verticies: 3734906
+Frames per Second (FPS): 10067.892578
+verts/frame = 14 
+nframes = 266779 
+ ./wesBench-instructional: area=32768.0 px, tri rate = 0.12 Mtri/sec, vertex rate=0.14 Mverts/sec, fill rate = 3958.86 Mpix/sec, verts/bucket=14, indices/bucket=0
+Elapsed Time: 17.302999 s
+Total Triangles: 620284
+Total Verticies: 1240568
+Frames per Second (FPS): 17924.175781
+verts/frame = 4 
+nframes = 310142 
+ ./wesBench-instructional: area=65536.0 px, tri rate = 0.04 Mtri/sec, vertex rate=0.07 Mverts/sec, fill rate = 2349.36 Mpix/sec, verts/bucket=4, indices/bucket=0
+Elapsed Time: 26.400999 s
+Total Triangles: 533736
+Total Verticies: 1067472
+Frames per Second (FPS): 10108.253906
+verts/frame = 4 
+nframes = 266868 
+ ./wesBench-instructional: area=131072.0 px, tri rate = 0.02 Mtri/sec, vertex rate=0.04 Mverts/sec, fill rate = 2649.82 Mpix/sec, verts/bucket=4, indices/bucket=0
+part_a% python -i parseAreaTest.py                                                                                                                                                                                                                                                                                

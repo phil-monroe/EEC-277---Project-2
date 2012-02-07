@@ -29,17 +29,16 @@ int main( int argc, char** argv) {
 	printf("Testing Number of Blocks vs. Performance");
 	printf("\n");
 	// 
-	// FILE *file; 
-	// file = fopen("out.csv","a+");
+	FILE *file; 
+	file = fopen("out.csv","a+");
 	
 	for(int iter = 0; iter < NUM_ITERATIONS; ++iter){
 		printf("Iteration %d\n", iter);
-		// int num_blocks = (int) pow(2.0f, (float) iter); 	// number of blocks to run is 2^iter
 		float perf = runTest((iter+1) * N_THREADS_PER_WARP); 
-		// fprintf(file, "%d, %d, %f\n", iter, iter+1, perf);
+		fprintf(file, "%d, %d, %f\n", iter, iter+1, perf);
 	}
 	
-	// fclose(file);
+	fclose(file);
 	exit(0);
 }
 
@@ -103,7 +102,7 @@ float runTest( int num_threads) {
 	free(h_counters);
 	cudaFree(d_counters);
 	
-	return perf;
+	return gflops;
 }
 
 // init_counters --------------------------------------------------------------
