@@ -1,7 +1,7 @@
 // Predeclarations ------------------------------------------------------------
 void 	initArray(float** host, float** device, size_t size, float initial_value=0.0f);
 void 	checkCUDAError(const char *msg);
-void 	startTest(cudaEvent_t &start, cudaEvent_t &stop);
+void 	startTest(cudaEvent_t &start, cudaEvent_t &stop, char* msg);
 float finishTest(cudaEvent_t &start, cudaEvent_t &stop);
 void 	parseArgs(int argc, char** argv);
 
@@ -125,13 +125,13 @@ void checkCUDAError(const char *msg) {
 //		@param start - Start time evet
 //		@param end   - End time evet
 //-----------------------------------------------------------------------------
-void startTest(cudaEvent_t &start, cudaEvent_t &stop){
+void startTest(cudaEvent_t &start, cudaEvent_t &stop, char* msg){
 	// Create Events
 	cudaEventCreate( &start );
 	cudaEventCreate( &stop );
 	
 	// Start Timer
-	printf("Starting Test\n");
+	printf("%s\n", msg);
 	cudaEventRecord( start, 0 );
 }
 
