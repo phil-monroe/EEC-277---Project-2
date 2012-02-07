@@ -17,14 +17,14 @@
 
 % Intro -----------------------------------------------------------------------
 \section {Introduction}
-In this report, we will describe the series of tests we performed to characterize various aspects of the graphics card, namely the Evga NVidia 9500 GT. Some basic statistics about this card are that the GPU contains 4 multiprocessors with 8 cores each. Since this GPU supports NVidia CUDA compute capability version 1.1, it can support up to 768 threads per multiprocessor. In section 2, we will cover how the graphical load of the GPU is affected by different variables. In section 3, we will examine the statistics of the compute capabilities of this particular graphics card.
+In this report, we will describe the series of tests we performed to characterize various aspects of the graphics card, namely the EVGA NVIDIA 9500 GT. Some basic statistics about this card are that the GPU contains 4 multiprocessors with 8 cores each. Since this GPU supports NVIDIA CUDA compute capability version 1.1, it can support up to 768 threads per multiprocessor. In section 2, we will cover how the graphical load of the GPU is affected by different variables. In section 3, we will examine the statistics of the compute capabilities of this particular graphics card.
 
 % Part A ----------------------------------------------------------------------
 \newpage
 \section{Part A}
-In this section, we will discuss the way in which different input data sets and settings can affect the graphical capabilities of the graphics card using OpenGL and the instructional version of WesBench.
+In this section, we will discuss the way different input data sets and settings can affect the graphical capabilities of the graphics card using OpenGL and the instructional version of WesBench.
 \subsection{Triangle Area}
-This test iterates through various triangle areas to determine how the fill rate and vertex rate change. The data, as shown in Figure 1, shows how this graphics card handles the change in triangle area size. The fill rate flattens out as it gets larger, which is a sign that the rasterizer is getting maxed out. The vertex rate stays steady since primitive assembly is maxed out. It then declines as the area increases because there are fewer vertices overall. The crossover where the rasterizer becomes the bottleneck over primitive assembly is at 64px.
+This test iterates through various triangle areas to determine how the fill rate and vertex rate change. The data, as shown in Figure 1, shows how this graphics card handles the change in triangle area size. The fill rate flattens out as it gets larger, which is a sign that the rasterizer is getting maxed out. The vertex rate stays steady in the beginning since primitive assembly is maxed out. It then declines as the area increases because there are fewer vertices overall. The crossover where the rasterizer becomes the bottleneck over primitive assembly is at 64px.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=5in]{figures/results1.png}
@@ -34,7 +34,7 @@ This test iterates through various triangle areas to determine how the fill rate
 
 \newpage
 \subsection{Lighting and Texture}
-This test shows the affects of enabling lighting and texturing the triangles. Figure 2 shows that the lighting has relatively little affect on the graphics performance of this card. This is likely due to the specialized lighting hardware on the GPU. Texturing, as shown in Figure 3, drops the graphics performance a bit, but still has a minor impact. Figure 4 shows the affects of enabling both texture and lighting, which is similar to the texture test. This is due to the fact that the effect of lighting is negligible to the effect of texturing. Therefore, adding texture and lighting have no effect on the rasterization vs. primitive assembly crossover point.
+This test shows the effects of enabling lighting and texturing the triangles. Figure 2 shows that the lighting has relatively little effect on the graphics performance of this card. This is likely due to the specialized lighting hardware on the GPU. Texturing, as shown in Figure 3, drops the graphics performance a bit, but still has a minor impact. Figure 4 shows the effects of enabling both texture and lighting, which is similar to the texture test. This is due to the fact that the effect of lighting is negligible to the effect of texturing. Therefore, adding texture and lighting have no effect on the rasterization vs. primitive assembly crossover point.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=5in]{figures/results2-lighting.png}
@@ -74,7 +74,7 @@ This tests the effect of sending triangles to the GPU by using disjoint or trian
 \FloatBarrier
 
 \subsection{Input Bandwidth}
-In this test, the program varies the number of vertices per bucket and records the associated vertex rate. The vertex rate increases as the vertices per bucket increases until it flattens at FJDSK, as seen in Figure 7. This indicates that, at first, the interface between the CPU and the GPU is the bottleneck and then it transfers to the geometry stage of the GPU. The second jump occurs because the area of the triangles was reduced to prevent memory overflow. However, the trend is still constant which indicates that the GPU geometry stage is still the bottleneck.
+In this test, the program varies the number of vertices per bucket and records the associated vertex rate. The vertex rate increases as the vertices per bucket increases until it flattens around 128 vertices per bucket, as seen in Figure 7. This indicates that, at first, the interface between the CPU and the GPU is the bottleneck and then it transfers to the geometry stage of the GPU. The second jump occurs because the area of the triangles was reduced to prevent memory overflow. However, the trend is still constant which indicates that the GPU geometry stage is still the bottleneck.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=5in]{figures/results3-interface-vs-GPU.png}
@@ -104,11 +104,11 @@ The maximum number of FLOPS capable by the graphics card is 87 GFLOPS. This data
 
 
 \subsection{Memory Bandwidth}
-The maximum memory bandwidth of the graphics card is 9.4 GB/s. We tested this by creating a kernel which read and modified many memory locations in a coalescing-friendly way amongst threads.
+The maximum memory bandwidth of the graphics card is 9.4 GB/s. We tested this by creating a kernel which copies an input array into an output array in a coalescing-friendly way amongst threads.
 
 \newpage
 \subsection{Effect of Blocks on FLOPS}
-This test examined how the number of blocks used affected the maximum FLOPS. To perform this test, the same kernel as the maximum FLOPS test was used but the number of blocks were altered for each complete run to obtain a full data set. As the number of blocks increases, the maximum FLOPS oscillate but increase, as seen in Figure 9. The oscillations occur as the number of block get closer or further from maximum occupancy. The overall increase occurs because more blocks mean more threads and more threads correspond to a higher minimum utilization.  
+This test examined how the number of blocks used affected the maximum FLOPS. To perform this test, the same kernel as the maximum FLOPS test was used but the number of blocks were altered for each complete run to obtain a full data set. As the number of blocks increases, the maximum FLOPS oscillate but increase, as seen in Figure 9. The oscillations occur as the number of block get closer or further from maximum occupancy. The overall increase occurs because more blocks mean more threads and more threads correspond to a higher minimum utilization. From this data, we can conclude that the GPU we are using has 4 multiprocessors since the maximum performance per blocks occurs when the number of blocks reaches 4.
 
 
 \begin{figure}[ht!]
@@ -146,30 +146,11 @@ The final test compared the use of persistent threads, using threads that matche
 \clearpage
 \section{Code}
 \begin{center}
-The code can be found on our GitHub repository:
+	The code can be found on our GitHub repository:
 
-\url {https://github.com/phil-monroe/EEC-277---Project-2}
+	\url {https://github.com/phil-monroe/EEC-277---Project-2}
 \end{center}
-% 
-% \normalsize
-% \begin{itemize}
-% 	
-% 	\item EEC 277 Lectures 1+2 plus slides.
-% 	
-% 	\item David Luebke and Greg Humphrey - How GPUs Work \newline
-% 	\url {http://bit.ly/hHt4VH}
-% 		
-% 	\item Jason L. McKesson - Learning Modern 3D Graphics Programming - Graphics and Rendering \newline
-% 	\url {http://bit.ly/kpxL01}
-% 		
-% 	\item Wikipedia - Graphics Pipeline \newline
-% 	\url {http://en.wikipedia.org/wiki/Graphics_pipeline}
-% 	
-% 	\item Wikipedia - Shaders \newline
-% 	\url {http://en.wikipedia.org/wiki/Shader}
-% 	
-% 	\item Eric Sink - It's All About Triangles \newline
-% 	\url {http://www.ericsink.com/wpf3d/5_Triangles.html}	
-% \end{itemize}
+
+The code is organized into multiple folders. The code for parts A and B can be found in the part\_a and part\_b folders respectively. The CUDA codes for part b are also arranged in a series of folders based on what that code is testing.
 
 \end{document}
